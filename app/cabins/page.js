@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import CabinList from "../_components/CabinList";
 import Spinner from "../_components/Spinner";
 
+// This will regenerate the value once per hour
+export const revalidate = 3600;
+
 export const metadata = {
   title: "Cabins",
 };
