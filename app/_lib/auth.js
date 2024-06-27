@@ -8,6 +8,7 @@ const authConfig = {
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET
 };
 
 export const { auth, handlers: { GET, POST }, } = NextAuth(authConfig);
