@@ -13,7 +13,15 @@ const authConfig = {
       return !!auth?.user;
     }
   },
+  pages: {
+    signIn: "/login",
+  },
   secret: process.env.NEXTAUTH_SECRET
 };
 
-export const { auth, handlers: { GET, POST }, } = NextAuth(authConfig);
+export const {
+  auth,
+  signIn,
+  signOut,
+  handlers: { GET, POST },
+} = NextAuth(authConfig);
