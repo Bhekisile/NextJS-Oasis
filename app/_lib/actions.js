@@ -8,22 +8,36 @@ export async function updateGuest(formData) {
   const session = await auth();
   if (!session) throw new Error("You must be logged in");
 
+  const guestId = session.user?.guestId;
+  if (!guestId) {
+    console.error("Guest ID is undefined or invalid:", guestId);
+    throw new Error("Invalid guest ID");
+  }
+
   const nationalID = formData.get("nationalID");
   const [nationality, countryFlag] = formData.get("nationality").split("%");
 
-  if (!/^[a-zA-z0-9]{6,12}$/.test(nationalID))
+  if (!/^[a-zA-Z0-9]{6,12}$/.test(nationalID))
     throw new Error("Please provide a valid national ID");
 
-  const updateData = { nationality, countryFlag, nationalID }
+  const updateData = { nationality, countryFlag, nationalID };
 
-  const { data, error } = await supabase
-    .from("guests")
-    .update(updateData)
-    .eq("id", session.user.guestId);
+  try {
+    const { data, error } = await supabase
+      .from("guests")
+      .update(updateData)
+      .eq("id", guestId);
 
-  if (error) throw new Error("Guest could not be updated");
+    if (error) {
+      console.error("Error updating guest:", error);
+      throw new Error("Guest could not be updated");
+    }
 
-  revalidatePath('/account/profile')
+    revalidatePath('/account/profile');
+  } catch (err) {
+    console.error("An unexpected error occurred:", err);
+    throw err;
+  }
 }
 
 export async function signInAction() {
