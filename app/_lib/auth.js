@@ -17,7 +17,8 @@ const authConfig = {
       try {
         const existingGuest = await getGuest(user.email);
 
-        if (!existingGuest) await createGuest({ email: user.email, fullName: user.name });
+        if (!existingGuest)
+          await createGuest({ email: user.email, fullName: user.name });
 
         return true;
       } catch {
@@ -25,15 +26,15 @@ const authConfig = {
       }
     },
     async session({ session, user }) {
-      const guest = getGuest(session.user.email)
-      session.user.guestId = guest.guestId
+      const guest = await getGuest(session.user.email);
+      session.user.guestId = guest.id;
       return session;
-    }
+    },
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET
 };
 
 export const {
