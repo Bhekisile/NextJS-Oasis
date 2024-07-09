@@ -35,14 +35,46 @@ export async function updateGuest(formData) {
       throw new Error("Guest could not be updated");
     }
 
-    revalidatePath('/account/profile');
+    revalidatePath("/account/profile");
   } catch (err) {
     console.error("An unexpected error occurred:", err);
     throw err;
   }
 }
 
-export async function deleteReservation(bookingId) {
+export async function createBooking(bookingData, formData) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  const newBooking = {
+    ...bookingData,
+    guestId: session.user.guestId,
+    numGuests: Number(formData.get("numGuests")),
+    observations: formData.get("observations").slice(0, 1000),
+    extrasPrice: 0,
+    totalPrice: bookingData.cabinPrice,
+    isPaid: false,
+    hasBreakfast: false,
+    status: "unconfirmed",
+  };
+
+  // console.log(newBooking);
+
+  const { error } = await supabase
+    .from("bookings")
+    .insert([newBooking]);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Booking could not be created");
+  }
+
+  revalidatePath(`/cabins/${bookingData.cabinId}`);
+  redirect("/cabins/thankyou");
+}
+
+export async function deleteBooking(bookingId) {
+
   const session = await auth();
   if (!session) throw new Error("You must be logged in");
 
@@ -52,11 +84,11 @@ export async function deleteReservation(bookingId) {
   if (!guestBookingIds.includes(bookingId))
     throw new Error("You are not allowed to delete this booking");
 
-  const { error } = await supabase.from('bookings').delete().eq('id', bookingId);
+  const { error } = await supabase.from("bookings").delete().eq("id", bookingId);
 
   if (error) {
     console.error(error);
-    throw new Error('Booking could not be deleted');
+    throw new Error("Booking could not be deleted");
   }
   revalidatePath("/account/reservations");
 }
@@ -83,16 +115,16 @@ export async function updateBooking(formData) {
 
   // 4. Mutation
   const { error } = await supabase
-    .from('bookings')
+    .from("bookings")
     .update(updateData)
-    .eq('id', bookingId)
+    .eq("id", bookingId)
     .select()
     .single();
 
   // 5. Error handling
   if (error) {
     console.error(error);
-    throw new Error('Booking could not be updated');
+    throw new Error("Booking could not be updated");
   }
 
   // 6. Revalidation
