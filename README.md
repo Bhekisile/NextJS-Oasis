@@ -24,8 +24,7 @@
 # 📖 [The Wild Oasis] <a name="about-project"></a>
 
 
-**[The Wild Oasis]** is a hotel management app built with NextJS as a frontend framework and Supabase as a backend database service. It allows hotel employees to manage bookings, cabins and guests.
-
+**[The Wild Oasis]** is about hotel management built with NextJS. It uses React server components and NextAuth for authentication and authorization. Moreover explore modern React hooks such as useFormState and useOptimistic. The users (admins / hotel employees) can manage bookings, cabins and guests. Anyone can use the app but if you want to make bookings or to access more features you will need to sign up and login. The data is stored in the supabase.
 
 ## 🛠 Built With <a name="built-with"></a>
 
